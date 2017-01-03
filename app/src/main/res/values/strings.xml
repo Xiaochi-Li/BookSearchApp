@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">BookSearchApp</string>
+    <string name="search">Type the book you want to search below</string>
+</resources>
