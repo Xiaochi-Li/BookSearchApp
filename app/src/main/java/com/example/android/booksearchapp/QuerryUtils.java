@@ -122,6 +122,7 @@ public class QuerryUtils {
         List<Book> books = new ArrayList<>();
 
         try {
+            Log.e("extractFeatureFromJson"," is excuted");
             //Create a JSONObject from the JSON response string
             JSONObject baseJsonResponse = new JSONObject(bookJSON);
 
@@ -137,9 +138,9 @@ public class QuerryUtils {
                 String author;
                 StringBuilder authorsBuilder = new StringBuilder("");
                 JSONArray authorsJSONArray = volumeInfo.getJSONArray("authors");
-                for (i = 0; i < authorsJSONArray.length(); i++) {
+                for (int o = 0; o < authorsJSONArray.length(); o++) {
 
-                    authorsBuilder.append(authorsJSONArray.getString(i) + ", ");
+                    authorsBuilder.append(authorsJSONArray.getString(o) + ", ");
                 }
                 author = authorsBuilder.toString();
 
@@ -149,7 +150,7 @@ public class QuerryUtils {
                 books.add(book);
             }
         } catch (JSONException e) {
-            Log.e("QuerryUtils", "Problem parsing the earthquake JSON results", e);
+            Log.e("QuerryUtils", "Problem parsing the book JSON results", e);
         }
         return books;
     }

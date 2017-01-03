@@ -1,23 +1,27 @@
 package com.example.android.booksearchapp;
 
+
+import android.app.LoaderManager;
 import android.content.Context;
-import android.content.Intent;
-import android.os.AsyncTask;
-import android.support.v7.app.AppCompatActivity;
+import android.content.Loader;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
 import android.widget.ListView;
-import android.widget.Toast;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static android.R.attr.data;
-import static com.example.android.booksearchapp.R.string.search;
-
-public class ShowBooks extends AppCompatActivity {
+public class ShowBooks extends AppCompatActivity implements android.app.LoaderManager.LoaderCallbacks<List<Book>> {
     private String searchUrl;
     private BookAdaptor mBookAdaptor;
+    private TextView mEmptyStateTextView;
+    private View loadingIndicator;
+    private String keyWord;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,18 +30,31 @@ public class ShowBooks extends AppCompatActivity {
 
 
         Bundle bundle = getIntent().getExtras();
-        String keyWord = bundle.getString("message");
+        keyWord = bundle.getString("message");
         Log.e("ShowBooks", keyWord);
-        searchUrl = UrlBuilder(keyWord);
+
 
         ListView bookListView = (ListView) findViewById(R.id.list_haha);
+
+        mEmptyStateTextView = (TextView) findViewById(R.id.empty_view);
+        bookListView.setEmptyView(mEmptyStateTextView);
+        loadingIndicator = findViewById(R.id.progress_bar);
 
         mBookAdaptor = new BookAdaptor(this, new ArrayList<Book>());
 
         bookListView.setAdapter(mBookAdaptor);
 
-        BookAsyncTask task = new BookAsyncTask();
-        task.execute(searchUrl);
+        LoaderManager loaderManager = getLoaderManager();
+        ConnectivityManager connMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
+        if (networkInfo != null && networkInfo.isConnected()) {
+            loaderManager.initLoader(1, null, this);
+            Log.i("initLoader", "Loader1 initialed");
+        } else {
+            mEmptyStateTextView.setText("no Internet connection");
+            loadingIndicator.setVisibility(View.GONE);
+        }
+
     }
 
     private String UrlBuilder(String keyWord) {
@@ -47,25 +64,29 @@ public class ShowBooks extends AppCompatActivity {
         return urlBuilder.toString();
     }
 
-    private class BookAsyncTask extends AsyncTask<String, Void, List<Book>> {
-        @Override
-        protected List<Book> doInBackground(String... urls) {
-            if (urls.length < 1 || urls[0] == null) {
-                return null;
-            }
-            List<Book> result = QuerryUtils.fetchEarthquakeData(urls[0]);
-            return result;
-        }
+    @Override
+    public Loader<List<Book>> onCreateLoader(int id, Bundle args) {
+        searchUrl = UrlBuilder(keyWord);
+        return new BookLoader(ShowBooks.this, searchUrl);
+    }
 
-        @Override
-        protected void onPostExecute(List<Book> data) {
-            mBookAdaptor.clear();
+    @Override
+    public void onLoadFinished(Loader<List<Book>> loader, List<Book> bookList) {
+        loadingIndicator.setVisibility(View.GONE);
+        mBookAdaptor.clear();
+        if (bookList != null && !bookList.isEmpty()) {
+            mBookAdaptor.addAll(bookList);
 
-            if (data != null && !data.isEmpty()) {
-                mBookAdaptor.addAll(data);
-            }
         }
+    }
+
+    @Override
+    public void onLoaderReset(Loader<List<Book>> loader) {
+
     }
 
 
 }
+
+
+
