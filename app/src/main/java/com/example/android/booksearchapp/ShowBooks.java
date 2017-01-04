@@ -13,6 +13,8 @@ import android.view.View;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,7 +33,6 @@ public class ShowBooks extends AppCompatActivity implements android.app.LoaderMa
 
         Bundle bundle = getIntent().getExtras();
         keyWord = bundle.getString("message");
-        Log.e("ShowBooks", keyWord);
 
 
         ListView bookListView = (ListView) findViewById(R.id.list_haha);
@@ -45,22 +46,23 @@ public class ShowBooks extends AppCompatActivity implements android.app.LoaderMa
         bookListView.setAdapter(mBookAdaptor);
 
         LoaderManager loaderManager = getLoaderManager();
-        ConnectivityManager connMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
-        if (networkInfo != null && networkInfo.isConnected()) {
-            loaderManager.initLoader(1, null, this);
-            Log.i("initLoader", "Loader1 initialed");
-        } else {
-            mEmptyStateTextView.setText("no Internet connection");
-            loadingIndicator.setVisibility(View.GONE);
-        }
+        loaderManager.initLoader(1, null, this);
+        Log.i("initLoader", "Loader1 initialed");
+
+
 
     }
 
     private String UrlBuilder(String keyWord) {
         StringBuilder urlBuilder = new StringBuilder("https://www.googleapis.com/books/v1/volumes?q=");
-        urlBuilder.append(keyWord);
+        try{String query = URLEncoder.encode(keyWord,"UTF-8");
+            urlBuilder.append(query);}
+        catch (UnsupportedEncodingException e){
+            throw new AssertionError("Utf-8 is unknown");
+        }
         urlBuilder.append("&maxResults=6");
+
+        Log.e("ShowBooks,UrlBuilder",urlBuilder.toString());
         return urlBuilder.toString();
     }
 
@@ -76,7 +78,8 @@ public class ShowBooks extends AppCompatActivity implements android.app.LoaderMa
         mBookAdaptor.clear();
         if (bookList != null && !bookList.isEmpty()) {
             mBookAdaptor.addAll(bookList);
-
+        } else{
+            mEmptyStateTextView.setText("No searching result");
         }
     }
 

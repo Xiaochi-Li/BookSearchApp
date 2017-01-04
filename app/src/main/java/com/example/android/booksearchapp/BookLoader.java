@@ -5,13 +5,10 @@ import android.content.Context;
 
 import java.util.List;
 
-/**
- * Created by lixiaochi on 3/1/17.
- */
 
 public class BookLoader extends AsyncTaskLoader {
     private String mUrl;
-    private BookLoader(Context context,String url){
+    BookLoader(Context context, String url){
         super(context);
         mUrl= url;
     }

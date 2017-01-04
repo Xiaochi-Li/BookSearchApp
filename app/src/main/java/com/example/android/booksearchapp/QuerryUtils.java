@@ -19,9 +19,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-/**
- * Created by lixiaochi on 27/12/16.
- */
 
 public class QuerryUtils {
 
@@ -122,7 +119,7 @@ public class QuerryUtils {
         List<Book> books = new ArrayList<>();
 
         try {
-            Log.e("extractFeatureFromJson"," is excuted");
+            Log.e("extractFeatureFromJson", " is excuted");
             //Create a JSONObject from the JSON response string
             JSONObject baseJsonResponse = new JSONObject(bookJSON);
 
@@ -137,14 +134,27 @@ public class QuerryUtils {
                 String title = volumeInfo.getString("title");
                 String author;
                 StringBuilder authorsBuilder = new StringBuilder("");
-                JSONArray authorsJSONArray = volumeInfo.getJSONArray("authors");
-                for (int o = 0; o < authorsJSONArray.length(); o++) {
 
-                    authorsBuilder.append(authorsJSONArray.getString(o) + ", ");
+
+                //if there is no author just put empty string.
+                if (volumeInfo.has("authors")) {
+                    JSONArray authorsJSONArray = volumeInfo.getJSONArray("authors");
+                    for (int o = 0; o < authorsJSONArray.length(); o++) {
+
+                        authorsBuilder.append(authorsJSONArray.getString(o) + ", ");
+                    }
+                    author = authorsBuilder.toString();
+                } else {
+                    author = "";
                 }
-                author = authorsBuilder.toString();
 
-                String description = volumeInfo.getString("description");
+//check if there are description
+                String description;
+                if (volumeInfo.has("description")) {
+                    description = volumeInfo.getString("description");
+                } else {
+                    description = "";
+                }
 
                 Book book = new Book(title, author, description);
                 books.add(book);
