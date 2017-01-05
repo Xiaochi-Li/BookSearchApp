@@ -39,6 +39,7 @@ public class ShowBooks extends AppCompatActivity implements android.app.LoaderMa
 
         mEmptyStateTextView = (TextView) findViewById(R.id.empty_view);
         bookListView.setEmptyView(mEmptyStateTextView);
+
         loadingIndicator = findViewById(R.id.progress_bar);
 
         mBookAdaptor = new BookAdaptor(this, new ArrayList<Book>());

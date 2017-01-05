@@ -10,12 +10,8 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import static android.R.attr.button;
-
 public class MainActivity extends AppCompatActivity {
     private String keyWord;
     private TextView mEmptyStateTextView;
@@ -32,10 +28,12 @@ public class MainActivity extends AppCompatActivity {
         /*and search button and a onclick listener*/
         Button searchButton = (Button) findViewById(R.id.search_button);
         searchButton.setOnClickListener(new OnClickListener() {
+
             @Override
             public void onClick(View v) {
 
                 keyWord = keyWordTextBox.getText().toString();
+
                 //Create the intent to the list Activity to show search result
                 ConnectivityManager connMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
                 NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
